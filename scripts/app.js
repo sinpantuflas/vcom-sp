@@ -1,10 +1,12 @@
 let heading = document.querySelector('h1');
 heading.textContent = 'CLICK ANYWHERE TO START'
-document.body.onclick = init;
-
+//document.body.onclick = init;
+//this.onclick=null;
+//document.body.addEventListener('click', init(), true})
+document.body.addEventListener("click", init, {once: true});
 
 function init() {
-  heading.textContent = 'Voice-change-O-matic'; 
+  heading.textContent = 'Voice-change-O-matic';
 
   // Older browsers might not implement mediaDevices at all, so we set an empty object first
   if (navigator.mediaDevices === undefined) {
@@ -45,20 +47,33 @@ function init() {
   var stream;
 
   // grab the mute button to use below
+  var peakText = document.getElementById("peakInfo");
+  var peakText2 = document.getElementById("peakInfo2");
 
   var mute = document.querySelector('.mute');
 
+  // grab the record controls
+  var rec = document.querySelector('.rec');
+
+
   //set up the different audio nodes we will use for the app
 
-  var analyser = audioCtx.createAnalyser();
-  analyser.minDecibels = -90;
-  analyser.maxDecibels = -10;
-  analyser.smoothingTimeConstant = 0.85;
+  var analyser1 = audioCtx.createAnalyser();
+  analyser1.minDecibels = -90;
+  analyser1.maxDecibels = -10;
+  analyser1.smoothingTimeConstant = 0.85;
+
+  var analyser2 = audioCtx.createAnalyser();
+  analyser2.minDecibels = -90;
+  analyser2.maxDecibels = -10;
+  analyser2.smoothingTimeConstant = 0.85;
 
   var distortion = audioCtx.createWaveShaper();
   var gainNode = audioCtx.createGain();
   var biquadFilter = audioCtx.createBiquadFilter();
   var convolver = audioCtx.createConvolver();
+
+  var preGain = audioCtx.createGain();
 
   // distortion curve for the waveshaper, thanks to Kevin Ennis
   // http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion
@@ -125,19 +140,52 @@ function init() {
         .then(
           function(stream) {
              source = audioCtx.createMediaStreamSource(stream);
-             source.connect(distortion);
+             //source2 = audioCtx.createMediaStreamSource(stream);
+             source.connect(preGain);
+             //source2.connect(analyser1);
+             preGain.connect(distortion);
+             //analyser1.connect(distortion);
              distortion.connect(biquadFilter);
              biquadFilter.connect(gainNode);
              convolver.connect(gainNode);
-             gainNode.connect(analyser);
-             analyser.connect(audioCtx.destination);
+             gainNode.connect(analyser2);
+             analyser2.connect(audioCtx.destination);
 
+             showPeakF();
           	 visualize();
              voiceChange();
         })
         .catch( function(err) { console.log('The following gUM error occured: ' + err);})
   } else {
      console.log('getUserMedia not supported on your browser!');
+  }
+
+  function showPeakF(){
+   analyser1.fftSize = 256;
+   var bufferLengthAlt2 = analyser1.frequencyBinCount;
+   console.log(bufferLengthAlt2);
+   var dataArrayAlt2 = new Uint8Array(bufferLengthAlt2);
+   analyser1.getByteFrequencyData(dataArrayAlt2);
+   var pkT=Math.max.apply(null,dataArrayAlt2);
+   function indexOfMax(arr) {
+     if (arr.length === 0) {
+         return -1;
+     }
+     var max = arr[0];
+     var maxIndex = 0;
+     for (var i = 1; i < arr.length; i++) {
+         if (arr[i] > max) {
+             maxIndex = i;
+             max = arr[i];
+         }
+     }
+     return maxIndex;
+    }
+    var pkTi = indexOfMax(dataArrayAlt2);
+    var binWidth = (22050 / bufferLengthAlt2);
+    peakText2.value = (pkTi*binWidth).toFixed(2);
+  //
+  console.log("!");
   }
 
   function visualize() {
@@ -149,8 +197,8 @@ function init() {
     console.log(visualSetting);
 
     if(visualSetting === "sinewave") {
-      analyser.fftSize = 2048;
-      var bufferLength = analyser.fftSize;
+      analyser2.fftSize = 2048;
+      var bufferLength = analyser2.fftSize;
       console.log(bufferLength);
       var dataArray = new Uint8Array(bufferLength);
 
@@ -160,7 +208,7 @@ function init() {
 
         drawVisual = requestAnimationFrame(draw);
 
-        analyser.getByteTimeDomainData(dataArray);
+        analyser2.getByteTimeDomainData(dataArray);
 
         canvasCtx.fillStyle = 'rgb(200, 200, 200)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -194,8 +242,8 @@ function init() {
       draw();
 
     } else if(visualSetting == "frequencybars") {
-      analyser.fftSize = 256;
-      var bufferLengthAlt = analyser.frequencyBinCount;
+      analyser2.fftSize = 4096;
+      var bufferLengthAlt = analyser2.frequencyBinCount;
       console.log(bufferLengthAlt);
       var dataArrayAlt = new Uint8Array(bufferLengthAlt);
 
@@ -204,7 +252,31 @@ function init() {
       var drawAlt = function() {
         drawVisual = requestAnimationFrame(drawAlt);
 
-        analyser.getByteFrequencyData(dataArrayAlt);
+        analyser2.getByteFrequencyData(dataArrayAlt);
+
+  //
+          var pkT=Math.max.apply(null,dataArrayAlt);
+          function indexOfMax(arr) {
+            if (arr.length === 0) {
+                return -1;
+            }
+
+            var max = arr[0];
+            var maxIndex = 0;
+
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i] > max) {
+                    maxIndex = i;
+                    max = arr[i];
+                }
+            }
+
+            return maxIndex;
+          }
+          var pkTi = indexOfMax(dataArrayAlt);
+
+          var binWidth = (22050 / bufferLengthAlt);
+          peakText.value = (pkTi*binWidth).toFixed(2);
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -278,11 +350,26 @@ function init() {
     if(mute.id === "") {
       gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
       mute.id = "activated";
-      mute.innerHTML = "Unmute";
+      mute.innerHTML = "Unmute Output";
     } else {
       gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0)
       mute.id = "";
-      mute.innerHTML = "Mute";
+      mute.innerHTML = "Mute Output";
     }
   }
+
+  // Record and stop controls
+  rec.onclick = voiceRecord;
+  function voiceRecord(){
+    if(rec.id === "") {
+      preGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
+      rec.id = "activated";
+      rec.innerHTML = "Record";
+    } else {
+      preGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0)
+      rec.id = "";
+      rec.innerHTML = "Stop Recording";
+    }
+  }
+
 }
