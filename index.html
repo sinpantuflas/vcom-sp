@@ -25,6 +25,7 @@
     <canvas class="visualizer" width="640" height="100"></canvas>
 
     <form class="controls">
+			<div>
       <div>
         <label for="voice">Voice setting</label>
         <select id="voice" name="voice">
@@ -34,6 +35,12 @@
           <option value="off" selected>Off</option>
         </select>
       </div>
+			<div>//Mode
+				<div for="distortion">
+					Here are several knobs and snippets
+				</div>
+			</div>
+		</div>
       <div>
         <label for="visual">Visualizer setting</label>
         <select id="visual" name="visual">
@@ -49,7 +56,7 @@
         <a class="rec">Stop Recording</a>
       </div>
 			<div>
-				<label for = "peakInfo"> Informaion</label>
+				<label for = "peakInfo"> Data</label>
 				<center>
 				<div class="commonText">f out<textarea id="peakInfo" name="peakInfo">
 				~~.~~ Hz</textarea></div>
