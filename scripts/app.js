@@ -4,6 +4,8 @@ heading.textContent = 'CLICK ANYWHERE TO START'
 //this.onclick=null;
 //document.body.addEventListener('click', init(), true})
 document.body.addEventListener("click", init, {once: true});
+//const myModule = require('./precision-inputs.base.js');
+//import KnobInput from './scripts/precision-inputs.js';
 
 function init() {
   heading.textContent = 'Voice-change-O-matic';
@@ -41,7 +43,7 @@ function init() {
   // set up forked web audio context, for multiple browsers
   // window. is needed otherwise Safari explodes
 
-  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   var voiceSelect = document.getElementById("voice");
   var source;
   var stream;
@@ -75,9 +77,14 @@ function init() {
   var convolver = audioCtx.createConvolver();
 
   var preGain = audioCtx.createGain();
+  var micIsOff = audioCtx.createGain();
 
-
-
+  var myAudio = document.getElementById("audio-source");
+  var myAudiosource = audioCtx.createMediaElementSource(myAudio);
+  //myAudiosource.loop = true;
+  //var myAudio = document.getElementById('audio-source');
+  //const myAudiosource = audioCtx.createMediaElementSource(myAudio);
+  //myAudiosource.connect(micIsOff);
   // grab audio track via XHR for convolver node
 
   var soundSource;
@@ -115,7 +122,8 @@ function init() {
 
   canvas.setAttribute('width',intendedWidth);
 
-
+  var canvas22 = document.querySelector('.byquad-response');
+  var canvasCtx22 = canvas.getContext("2d");
 
   var drawVisual;  //requestAnimationFrame(f)
 
@@ -128,8 +136,12 @@ function init() {
     .then(
       function(stream) {
         source = audioCtx.createMediaStreamSource(stream);
+
         source.connect(preGain);
-        preGain.connect(analyser1);
+        preGain.connect(micIsOff);
+        myAudiosource.connect(micIsOff);
+        micIsOff.connect(analyser1);
+        //preGain.connect(analyser1);
         analyser1.connect(distortion);
         distortion.connect(biquadFilter);
         biquadFilter.connect(gainNode);
@@ -149,7 +161,7 @@ function init() {
     function audioMeter1(){
 
       var bufferLengthAlt2 = analyser1.frequencyBinCount;
-      console.log('analyser1 bins: ' + bufferLengthAlt2);
+      //console.log('analyser1 bins: ' + bufferLengthAlt2);
       var dataArrayAlt2 = new Uint8Array(bufferLengthAlt2);
 
       var drawMeter1 = function(){
@@ -179,7 +191,7 @@ function init() {
         if(visualSelect.value === "sinewave") {
           analyser1.fftSize = 256;
           var bufferLength = analyser2.fftSize;
-          console.log(bufferLength);
+          //console.log(bufferLength);
           var dataArray = new Uint8Array(bufferLength);
 
           analyser2.getByteTimeDomainData(dataArray);
@@ -215,7 +227,7 @@ function init() {
         else if(visualSelect.value === "frequencybars") {
         analyser1.fftSize = 2048;
         var bufferLengthAlt = analyser2.frequencyBinCount;
-        console.log(bufferLengthAlt);
+        //console.log(bufferLengthAlt);
         var dataArrayAlt = new Uint8Array(bufferLengthAlt);
 
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -265,7 +277,7 @@ function init() {
       biquadFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
 
       var voiceSetting = voiceSelect.value;
-      console.log(voiceSetting);
+      //console.log(voiceSetting);
 
       //when convolver is selected it is connected back into the audio path
       if(voiceSelect.value === "convolver") {
@@ -276,16 +288,41 @@ function init() {
         biquadFilter.connect(gainNode);
 
         if(voiceSelect.value === "distortion") {
-          distortion.curve = makeDistortionCurve(400);
+          distortion.curve = makeDistortionCurve(document.getElementById("distortion-value").value)
         } else if(voiceSetting === "biquad") {
-          biquadFilter.type = "lowshelf";
-          biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
-          biquadFilter.gain.setTargetAtTime(25, audioCtx.currentTime, 0)
+          biquadFilter.type = document.getElementById("byquad-type").value
+          biquadFilter.frequency.setTargetAtTime(document.getElementById("byquad-freq").value, audioCtx.currentTime, 0)
+          biquadFilter.gain.setTargetAtTime(document.getElementById("byquad-gain").value, audioCtx.currentTime, 0)
+          biquadFilter.Q.setTargetAtTime(document.getElementById("byquad-Qfac").value, audioCtx.currentTime, 0)
+
+          canvasCtx22.clearRect(0, 0, WIDTH, HEIGHT);
+          canvasCtx22.fillStyle = 'rgb(200, 200, 200)';
+          canvasCtx22.fillRect(0, 0, WIDTH, HEIGHT);
+          canvasCtx22.lineWidth = 2;
+          canvasCtx22.strokeStyle = 'rgb(0, 0, 0)';
+          canvasCtx22.beginPath();
+          var sliceWidth = 200 * 1.0 / bufferLength;
+          var x = 0;
+          for(var i = 0; i < bufferLength; i++) {
+            var v = dataArray[i] / 128.0;
+            var y = v * 100/2;
+            if(i === 0) {
+              canvasCtx22.moveTo(x, y);
+            } else {
+              canvasCtx22.lineTo(x, y);
+            }
+            x += sliceWidth;
+          }
+          canvasCtx22.lineTo(canvas22.width, canvas22.height/2);
+          canvasCtx22.stroke();
+
         } else if(voiceSelect.value === "off") {
           //console.log("Voice settings turned off");
         }
       }
     }
+
+
 
     // event listeners to change visualize and voice settings
 
@@ -299,6 +336,18 @@ function init() {
     voiceSelect.onchange = function() {
       //voiceChange();
       console.log('voice: ' + voiceSelect.value);
+
+      //clear
+      var elements = document.getElementsByClassName('container-options');
+        for (var i in elements) {
+          if (elements.hasOwnProperty(i)) {
+            elements[i].className = 'container-options-hidden';
+          }
+      }
+      //populate
+      var element = document.getElementById(voiceSelect.value);
+      element.className = 'container-options';
+
     };
 
     mute.onclick = voiceMute;
@@ -330,6 +379,7 @@ function init() {
     }
 
   }
+
 
   // distortion curve for the waveshaper, thanks to Kevin Ennis
   // http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion

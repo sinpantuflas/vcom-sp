@@ -10,7 +10,7 @@ html {
 body {
 	width: 100%;
 	height: inherit;
-	background-color: #999;
+	background-color: #5e5757;
 	background-image: url(../images/pattern.png);
 }
 
@@ -59,7 +59,7 @@ canvas {
 /* || select element styling */
 
 .controls div {
-  width: 100%;
+  width: 60%;
   padding-top: 1rem;
 }
 
@@ -70,15 +70,60 @@ canvas {
 
 .controls label {
   width: 100%;
-  text-align: center;
+  text-align: left;
   line-height: 3rem;
   padding: 1rem 0;
 }
 
 .controls select {
-  width: 80%;
+  width: 100%;
   font-size: 2rem;
 }
+
+.container {
+  width: 100%;
+  background: gray;
+  margin: auto;
+  padding: 10px;
+}
+
+.container-settings {
+  width: 40px%;
+  background: red;
+	position:relative;
+	/*float: left;*/
+}
+
+.container-options {
+  	/*margin-left: 10px;*/
+		height:200px;
+	  background: blue;
+}
+
+.container-options-hidden {
+  	/*margin-left: 10px;*/
+		display:none;
+		height:200px;
+	  background: blue;
+}
+
+.my-knob-container {
+	width: 80px;
+	height: 80px;
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.my-knob-visuals {
+	width: 80px;
+	height: 80px;
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
 
 /* || button styling */
 
@@ -89,9 +134,9 @@ button, form a {
     text-align: center;
     color: white;
     border: none;
-    width: 90%;
+    width: 40%;
     margin: 1rem auto 0.5rem;
-    max-width: 80%;
+    max-width: 35%;
     font-size: 1.6rem;
     line-height: 3rem;
     padding: .5rem;
