@@ -4,76 +4,136 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 	<title>Voice-change-O-matic</title>
-	
+
 	<!--[if le IE 9]>
-      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="scripts/respond.js"></script>
     <![endif]-->
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link href='http://fonts.googleapis.com/css?family=Righteous|Nova+Square' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Righteous|Nova+Square' rel='stylesheet' type='text/css'>
 	  <link href="styles/normalize.css" rel="stylesheet" type="text/css">
     <link href="styles/app.css" rel="stylesheet" type="text/css">
-	
+
+ <script src="scripts/input-knobs.js"></script>
+
 </head>
 <body>
+
   <div class="wrapper">
-    
+
     <header>
       <h1>Voice-change-O-matic</h1>
     </header>
 
-    <canvas class="visualizer"></canvas> 
+    <canvas class="visualizer" width="640" height="100"></canvas>
 
     <form class="controls">
-      <div>
+
+			<div class="container">
+
+			<div class="container-settings">
         <label for="voice">Voice setting</label>
-        <select id="voice" name="voice">
+				<select id="voice" name="voice">
+					<option value="distortion">Distortion</option>
+          <option value="convolver">Reverb</option>
+          <option value="biquad">Bass Boost</option>
           <option value="off" selected>Off</option>
-          <option value="distortion">Distortion</option>
         </select>
       </div>
-      <div>
+
+			<div class=container-options-hidden id="distortion">
+				<input type="range" min="0" max="800" step="50" class="input-knob" id="distortion-value"/> Amount
+			</div>
+			<div class=container-options-hidden id="convolver">
+				<input type="range" class="input-knob" /> Pfiu
+				<input type="range" class="input-knob" /> Pefix
+				<input type="range" class="input-knob" /> Posfix
+			</div>
+			<div class=container-options-hidden id="biquad">
+				<input type="range"  min="125" max="6000" step="125" value=1000 class="input-knob" id="byquad-freq"/> Frequency
+				<input type="range"  min="0" max="40" step="5" value=26 class="input-knob" id="byquad-gain"/> Gain
+				<input type="range"  min="0" max="20" step="0.5" value=10 class="input-knob" id="byquad-Qfac"/> Q
+				Filter type:
+				<select id="byquad-type" />
+					<option value="lowshelf" selected>Lowshelf</option>
+					<option value="lowpass">Lowpass</option>
+					<option value="highpass">Highpass</option>
+					<option value="highshelf">Highshelf</option>
+					<option value="peaking">Peak</option>
+					<option value="notch">Notch</option>
+					<option value="allpass">Allpass</option>
+				</select>
+				Frequency Response:
+				<canvas class="byquad-response" width="200" height="100"></canvas>
+			</div>
+			<div class=container-options id="off">
+			</div>
+		</div>
+
+    <div class=container>
+			<div class="container-settings">
         <label for="visual">Visualizer setting</label>
         <select id="visual" name="visual">
-          <option value="sinewave" selected>Sinewave (default)</option>
+          <option value="sinewave">Sinewave</option>
+          <option value="frequencybars" selected>Frequency bars</option>
           <option value="off">Off</option>
         </select>
       </div>
-      <div>
-        <a class="mute">Mute</a>
+			<div class=container-options>
+				Parameters
+			</div>
+		</div>
+
+
+      <div class=container>
+        <a class="mute">Mute Nodes</a>
       </div>
+
+			<div class=container>
+        <a class="rec">Stop Recording</a>
+      </div>
+
+			<div class=container>
+				<label for = "peakInfo"> Data</label>
+				<center>
+				<div class="commonText">f out<textarea id="peakInfo" name="peakInfo">
+				~~.~~ Hz</textarea></div>
+				<div class="commonText">f in <textarea id="peakInfo2" name="peakInfo2">
+				~~.~~ Hz</textarea></div>
+			</center>
+			</div>
+			<div class=container>
+			<audio id="audio-source" controls loop crossOrigin="anonymous" src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg" type="audio/ogg">
+			<!--src="https://mdn.github.io/voice-change-o-matic/audio/concert-crowd.ogg"*-->
+		</audio>
+
+	</div>
+
+
     </form>
-
-
   </div>
 
+	<!-- Information box -->
   <label for="toggle">❔</label>
   <input type="checkbox" id="toggle">
   <aside>
     <h2>Information</h2>
-
     <p>Voice-change-O-matic is built using:</p>
-
     <ul>
-
     <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia">getUserMedia</a>, which is currently supported in Firefox, Opera (desktop/mobile) and Chrome (desktop only.) Firefox requires no prefix; the others require <code>webkit</code> prefixes.</li>
-
     <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API">Web Audio API</a>, which is currently supported in Firefox, Chrome, Safari (desktop/mobile) and Opera (desktop only). Firefox and Opera require no prefix; Chrome requires <code>webkit</code> prefixes.</li>
-
     </ul>
-
-
-
     <button id="install-btn">Install app</button>
   </aside>
 
+
   <!-- The following element pulls in the script for the default template functionality -->
-      
-    <script src="scripts/install.js"></script>  
+    <script src="scripts/install.js"></script>
 
     <!-- Below is your custom application script -->
-
     <script src="scripts/app.js"></script>
-	
+
+
+
 </body>
 </html>
