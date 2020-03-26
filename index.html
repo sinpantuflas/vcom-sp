@@ -25,7 +25,7 @@
       <h1>Voice-change-O-matic</h1>
     </header>
 
-    <canvas class="visualizer" width="640" height="100"></canvas>
+    <canvas class="visualizer" width="640px" height="100px"></canvas>
 
     <form class="controls">
 
@@ -42,18 +42,26 @@
       </div>
 
 			<div class=container-options-hidden id="distortion">
-				<input type="range" min="0" max="800" step="50" class="input-knob" id="distortion-value"/> Amount
+				Amount <br>
+				<input type="range" min="0" max="800" step="50" class="input-knob" id="distortion-value"/>
 			</div>
+
 			<div class=container-options-hidden id="convolver">
-				<input type="range" class="input-knob" /> Pfiu
-				<input type="range" class="input-knob" /> Pefix
-				<input type="range" class="input-knob" /> Posfix
+				Level <input type="range" class="input-knob" />
 			</div>
+
 			<div class=container-options-hidden id="biquad">
-				<input type="range"  min="125" max="6000" step="125" value=1000 class="input-knob" id="byquad-freq"/> Frequency
-				<input type="range"  min="0" max="40" step="5" value=26 class="input-knob" id="byquad-gain"/> Gain
-				<input type="range"  min="0" max="20" step="0.5" value=10 class="input-knob" id="byquad-Qfac"/> Q
-				Filter type:
+				<div style="display:inline-block;"> Freq.
+				<input type="range"  min="125" max="6000" step="125" value=1000 class="input-knob" id="byquad-freq"/>
+				</div>
+				<div style="display:inline-block;"> Gain
+				<input type="range"  min="0" max="40" step="5" value=26 class="input-knob" id="byquad-gain"/>
+				</div>
+				<div style="display:inline-block; float=right;"> Q factor
+				<input type="range"  min="0" max="20" step="0.5" value=10 class="input-knob" id="byquad-Qfac"/>
+				</div>
+				<div>
+				Filter type: <br>
 				<select id="byquad-type" />
 					<option value="lowshelf" selected>Lowshelf</option>
 					<option value="lowpass">Lowpass</option>
@@ -63,11 +71,11 @@
 					<option value="notch">Notch</option>
 					<option value="allpass">Allpass</option>
 				</select>
-				Frequency Response:
-				<canvas class="byquad-response" width="200" height="100"></canvas>
+				</div>
 			</div>
 			<div class=container-options id="off">
 			</div>
+
 		</div>
 
     <div class=container>
@@ -79,33 +87,30 @@
           <option value="off">Off</option>
         </select>
       </div>
-			<div class=container-options>
-				Parameters
+			<div class=container-options id="off">
 			</div>
 		</div>
 
 
       <div class=container>
-        <a class="mute">Mute Nodes</a>
-      </div>
-
-			<div class=container>
-        <a class="rec">Stop Recording</a>
-      </div>
+				<a class="rec">Mic off</a>
+        <a class="mute">Mute nodes</a>
+			</div>
 
 			<div class=container>
 				<label for = "peakInfo"> Data</label>
 				<center>
+					<div class="commonText"  style="float:left;">f in <textarea id="peakInfo2" name="peakInfo2">
+					~~.~~ Hz</textarea></div>
 				<div class="commonText">f out<textarea id="peakInfo" name="peakInfo">
-				~~.~~ Hz</textarea></div>
-				<div class="commonText">f in <textarea id="peakInfo2" name="peakInfo2">
-				~~.~~ Hz</textarea></div>
+				  ~~.~~ Hz</textarea></div>
 			</center>
 			</div>
 			<div class=container>
-			<audio id="audio-source" controls loop crossOrigin="anonymous" src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg" type="audio/ogg">
-			<!--src="https://mdn.github.io/voice-change-o-matic/audio/concert-crowd.ogg"*-->
-		</audio>
+				<label for = "secondSource"> Second source</label>
+			<audio id="audio-source" controls loop>
+      <source src="https://mdn.github.io/voice-change-o-matic/audio/concert-crowd.ogg" type="audio/ogg">
+    </audio>
 
 	</div>
 

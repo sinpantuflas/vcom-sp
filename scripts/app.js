@@ -174,7 +174,7 @@ function init() {
         var maxIndex2 = getMaxIArray(dataArrayAlt2); //[m,i]
 
         var binWidth = (22050 / bufferLengthAlt2);
-        peakText2.value = (maxIndex2[1] * binWidth).toFixed(2);
+        peakText2.value = (maxIndex2[1] * binWidth).toFixed(2)  + "Hz";
       };
 
       drawMeter1();
@@ -259,7 +259,7 @@ function init() {
           var maxIndex = getMaxIArray(dataArrayAlt); //[m,i]
 
           var binWidth = (22050 / bufferLengthAlt);
-          peakText.value = (maxIndex[1] * binWidth).toFixed(2);
+          peakText.value = (maxIndex[1] * binWidth).toFixed(2) + "Hz";
 
         }
       }
@@ -356,11 +356,11 @@ function init() {
       if(mute.id === "") {
         gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
         mute.id = "activated";
-        mute.innerHTML = "Unmute Output";
+        mute.innerHTML = "Unmute nodes";
       } else {
         gainNode.gain.setTargetAtTime(1, audioCtx.currentTime, 0)
         mute.id = "";
-        mute.innerHTML = "Mute Output";
+        mute.innerHTML = "Mute nodes";
       }
     }
 
@@ -370,11 +370,11 @@ function init() {
       if(rec.id === "") {
         preGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0)
         rec.id = "activated";
-        rec.innerHTML = "Record";
+        rec.innerHTML = "Mic on";
       } else {
         preGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0)
         rec.id = "";
-        rec.innerHTML = "Stop Recording";
+        rec.innerHTML = "Mic off";
       }
     }
 
